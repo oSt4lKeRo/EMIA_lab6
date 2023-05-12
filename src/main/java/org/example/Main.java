@@ -13,7 +13,6 @@ public class Main {
 		int countGen = 4;
 		int repeat = 2;
 
-
 		int[][] genMas = generateGenMas(taskMas.length, countGen,0);
 
 		printMas(taskMas);
@@ -33,14 +32,12 @@ public class Main {
 		int count = 1;
 		int iteratorCount = 1;
 
-		while (count != 5){
+		while (count != 10){
 
 			System.out.println("Iterator: " + iteratorCount + " Count: " + count + " new generation Mas: ");
 
 			int[] newGenerationMas = searchNewGeneration(taskMas, genMas, generation, countPros, repeat);
 			printMas(newGenerationMas);
-
-			System.out.println("\b");
 
 			int newBestElem = searchMin(newGenerationMas);
 

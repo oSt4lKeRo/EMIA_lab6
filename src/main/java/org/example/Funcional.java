@@ -18,8 +18,24 @@ public class Funcional {
 		Test(){}
 	}
 
+	public static int[] sort(int[] mas) {
 
+		boolean isSorted = false;
+		int buf;
+		while(!isSorted) {
+			isSorted = true;
+			for (int i = 0; i < mas.length-1; i++) {
+				if(mas[i] > mas[i+1]){
+					isSorted = false;
 
+					buf = mas[i];
+					mas[i] = mas[i+1];
+					mas[i+1] = buf;
+				}
+			}
+		}
+		return mas;
+	}
 
 	public static int searchMax(int[] taskSum){
 		int max = taskSum[0];
@@ -71,16 +87,44 @@ public class Funcional {
 	}
 
 
-	public static int[] crossover(int[] mas1, int[] mas2, int delimiter){
-		int[] newGen = new int[mas1.length];
-		for(int i = 0; i < delimiter; i++){
-			newGen[i] = mas1[i];
+	public static int[] crossover(int[] mas1, int[] mas2){
+
+		int delimiter_1 = 0;
+		int delimiter_2 = 0;
+		int[] newMas = new int[mas1.length];
+
+		while (true) {
+			Random random = new Random();
+			delimiter_1 = random.nextInt(mas1.length - 1);
+			delimiter_2 = random.nextInt(mas1.length - 1);
+			if(delimiter_1 != delimiter_2){
+				break;
+			}
 		}
-		for(int i = delimiter; i < mas1.length; i++){
-			newGen[i] = mas2[i];
+
+		if(delimiter_1 < delimiter_2){
+			for(int i = 0; i < delimiter_1; i++){
+				newMas[i] = mas1[i];
+			}
+			for(int i = delimiter_1; i < delimiter_2; i++){
+				newMas[i] = mas2[i];
+			}
+			for(int i = delimiter_2; i < mas1.length; i++){
+				newMas[i] = mas1[i];
+			}
+		} else {
+			for(int i = 0; i < delimiter_2; i++){
+				newMas[i] = mas1[i];
+			}
+			for(int i = delimiter_2; i < delimiter_1; i++){
+				newMas[i] = mas2[i];
+			}
+			for(int i = delimiter_1; i < mas1.length; i++){
+				newMas[i] = mas1[i];
+			}
 		}
 		System.out.print("Crossover ");
-		return newGen;
+		return newMas;
 	}
 
 	public static int[] countingTaskSum(ArrayList<Integer>[] fenMatrix){
@@ -141,23 +185,21 @@ public class Funcional {
 	}
 
 
+//////Old
+	public static void mutation(int[] gen, Test test, int iteratorCount) {
 
-	public static void mutation(int[] gen, Test test, int iteratorCount){
+		Random random = new Random();
+		int indexElem = random.nextInt(gen.length);
+//			indexElem = searchMaxIndex(gen);
+//			int beforeElem = gen[indexElem];
+//			int beforeIndex = supportSearchGroup(beforeElem, 4);
+//			if (beforeIndex == supportSearchGroup(test.beforeElem, 4)) {
+//				test.end = true;
+//			}
 
-			Random random = new Random();
-			int indexElem = random.nextInt(gen.length);
+//		for (int l = 0; l < iteratorCount; l++) {
 
-
-			indexElem = searchMaxIndex(gen);
-			int beforeElem = gen[indexElem];
-			int beforeIndex = supportSearchGroup(beforeElem, 4);
-			if (beforeIndex == supportSearchGroup(test.beforeElem, 4)) {
-				test.end = true;
-			}
-
-			for(int l = 0; l < iteratorCount; l++) {
-
-				System.out.print(gen[indexElem] + " => ");
+			System.out.print(gen[indexElem] + " => ");
 
 			String str = Integer.toBinaryString(gen[indexElem]);
 			StringBuffer stringBuffer = new StringBuffer(str);
@@ -165,7 +207,6 @@ public class Funcional {
 			for (int i = stringBuffer.length(); i < 8; i++) {
 				stringBuffer.insert(0, 0);
 			}
-
 			str = String.valueOf(stringBuffer);
 			char[] chars = str.toCharArray();
 			System.out.print(str);
@@ -188,26 +229,68 @@ public class Funcional {
 			int elem = Integer.parseInt(str, 2);
 			System.out.println(elem);
 
-
-			if (beforeElem > elem && beforeIndex != supportSearchGroup(elem, 4)) {
-				test.min = true;
-			}
-
+//			if (beforeElem > elem && beforeIndex != supportSearchGroup(elem, 4)) {
+//				test.min = true;
+//			}
 
 			gen[indexElem] = elem;
 			printMas(gen);
+//		}
+	}
+
+	public static void mutation(int[] gen) {
+
+		Random random = new Random();
+		int indexElem = random.nextInt(gen.length);
+
+		System.out.print(gen[indexElem] + " => ");
+
+		String str = Integer.toBinaryString(gen[indexElem]);
+		StringBuffer stringBuffer = new StringBuffer(str);
+
+		for (int i = stringBuffer.length(); i < 8; i++) {
+			stringBuffer.insert(0, 0);
 		}
+		str = String.valueOf(stringBuffer);
+		char[] chars = str.toCharArray();
+		System.out.print(str);
+
+		int indexOneElem = random.nextInt(chars.length);
+		int indexTwoElem = random.nextInt(chars.length);
+
+		System.out.print("[" + indexOneElem + "][" + indexTwoElem + "] => ");
+
+		char buf = chars[indexOneElem];
+		chars[indexOneElem] = chars[indexTwoElem];
+		chars[indexTwoElem] = buf;
+
+		str = "";
+		for (char i : chars) {
+			str += i;
+		}
+		System.out.print(str + " = ");
+
+		int elem = Integer.parseInt(str, 2);
+		System.out.println(elem);
+
+
+		gen[indexElem] = elem;
+		printMas(gen);
 	}
 
 	public static int[] searchNewGeneration(int[][] taskMas, int[][] genMas, int[] generation, int countPros, int countIterator) {
 
-		int[] newGenerations = new int[genMas.length];
+		int[] newGenerations = new int[genMas.length*2];
 		Random random = new Random();
+		for(int i = 0; i < generation.length; i++){
+			newGenerations[i] = generation[i];
+		}
+
 		for (int i = 0; i < genMas.length; i++) {
 
-			int delimiter = random.nextInt(taskMas.length - 1);
 			int indexSecondGenMas = 0;
 			int indexSecondGenMas2 = 0;
+
 			while (true) {
 				indexSecondGenMas = random.nextInt(genMas.length);
 				if (indexSecondGenMas != i) {
@@ -224,27 +307,24 @@ public class Funcional {
 			int oneGenBestElem = countingBestElem(taskMas, genMas[indexSecondGenMas], countPros);
 			int twoGenBestElem = countingBestElem(taskMas, genMas[indexSecondGenMas2], countPros);
 			if(oneGenBestElem >= twoGenBestElem){
-				indexSecondGenMas = oneGenBestElem;
+				indexSecondGenMas = indexSecondGenMas;
+				System.out.println(oneGenBestElem + " >= " + twoGenBestElem);
 			} else {
-				indexSecondGenMas = twoGenBestElem;
+				indexSecondGenMas = indexSecondGenMas2;
+				System.out.println(oneGenBestElem + " < " + twoGenBestElem);
 			}
 
 			int[] newGen1 = genMas[i];
 			int[] newGen2 = genMas[indexSecondGenMas];
 
 
-
 			int count = 0;
 			if (random.nextInt(100) <= 70) {
-				for(int l = 0; l < countIterator; l++) {
-					newGen1 = crossover(genMas[i], genMas[indexSecondGenMas], delimiter);
-				}
+				newGen1 = crossover(genMas[i], genMas[indexSecondGenMas]);
 				count++;
 			}
 			if (random.nextInt(100) <= 70) {
-				for(int l = 0; l < countIterator; l++) {
-					newGen2 = crossover(genMas[indexSecondGenMas], genMas[i], delimiter);
-				}
+				newGen2 = crossover(genMas[indexSecondGenMas], genMas[i]);
 				count++;
 			}
 //			if (count == 0) {
@@ -274,41 +354,43 @@ public class Funcional {
 			System.out.println("-----");
 
 			System.out.print("О" + i + " + O" + indexSecondGenMas + ": ");
-
 			printMas(newGen1);
-			Test test1 = new Test();
-			if (random.nextInt(100) <= 100) {
-				System.out.println();
-				countingBestElem(taskMas, newGen1, countPros, test1, 1);
-
-				System.out.print("Мутация: ");
-				for(int l = 0; l < countIterator; l++) {
-					mutation(newGen1, test1, countIterator);
-				}
-			}
 
 			System.out.print("О" + indexSecondGenMas + " + O" + i + ": ");
 			printMas(newGen2);
+			System.out.println();
 
-			Test test2 = new Test();
+//			Test test1 = new Test();
 			if (random.nextInt(100) <= 100) {
-				System.out.println();
-				countingBestElem(taskMas, newGen2, countPros, test2, 1);
+//				System.out.println();
+//				countingBestElem(taskMas, newGen1, countPros, test1, 1);
 
 				System.out.print("Мутация: ");
 				for(int l = 0; l < countIterator; l++) {
-					mutation(newGen2, test2, countIterator);
+					mutation(newGen1);
 				}
-//				}
+				System.out.println();
+			}
+
+//			Test test2 = new Test();
+			if (random.nextInt(100) <= 100) {
+//				System.out.println();
+//				countingBestElem(taskMas, newGen2, countPros, test2, 1);
+
+				System.out.print("Мутация: ");
+				for(int l = 0; l < countIterator; l++) {
+					mutation(newGen2);
+				}
+				System.out.println();
+			}
 
 
 				int[] resultMas = new int[genMas.length - 1];
 
 				resultMas[0] = generation[i];
-				resultMas[1] = countingBestElem(taskMas, newGen1, countPros, test1, 2);
-				resultMas[2] = countingBestElem(taskMas, newGen2, countPros, test2, 2);
-
-				/////////////////-------------------------------------------------Вывод
+				resultMas[1] = countingBestElem(taskMas, newGen1, countPros);
+				resultMas[2] = countingBestElem(taskMas, newGen2, countPros);
+				///////////////-------------------------------------------------Вывод
 //				if (test1.min && (test1.beforeIndex != test1.afterIndex) && (supportSearchElemInFinMas(newGen1, taskMas, test1.beforeIndex, countPros) <= supportSearchElemInFinMas(newGen1, taskMas, test1.afterIndex, countPros)) && test1.end) {
 //					System.out.println("Truuuuuee1");
 //				}
@@ -320,11 +402,18 @@ public class Funcional {
 				System.out.println("   " + searchMin(resultMas));
 				System.out.println();
 
-				newGenerations[i] = searchMin(resultMas);
-			}
+				newGenerations[i+genMas.length] = searchMin(resultMas);
+//			}
 			System.out.println("\n");
 		}
-		return newGenerations;
+		printMas(newGenerations);
+		sort(newGenerations);
+		printMas(newGenerations);
+		int[] newGenerationMas = new int[genMas.length];
+		for(int i = 0; i < newGenerationMas.length; i++){
+			newGenerationMas[i] = newGenerations[i];
+		}
+		return newGenerationMas;
 	}
 
 
