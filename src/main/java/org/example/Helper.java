@@ -11,7 +11,7 @@ public class Helper {
 	public static int[][] generateMas(int result){
 
 		if (result == 1) {
-			int n = 11;
+			int n = 12;
 			int m = 4;
 			int T1 = 10;
 			int T2 = 20;
